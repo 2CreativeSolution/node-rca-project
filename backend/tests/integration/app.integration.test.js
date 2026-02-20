@@ -42,6 +42,24 @@ describe("API integration", () => {
     expect(response.headers["x-request-id"]).toBeDefined();
   });
 
+  test("allows configured frontend origin via CORS", async () => {
+    const app = createApp();
+
+    const response = await request(app).get("/").set("Origin", "http://localhost:5173");
+
+    expect(response.status).toBe(200);
+    expect(response.headers["access-control-allow-origin"]).toBe("http://localhost:5173");
+  });
+
+  test("blocks non-allowlisted origin via CORS", async () => {
+    const app = createApp();
+
+    const response = await request(app).get("/").set("Origin", "https://malicious.example");
+
+    expect(response.status).toBe(200);
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+  });
+
   test("POST /api/sync-user without token returns 401 Missing token", async () => {
     const app = createApp();
 

@@ -27,11 +27,27 @@ function loadFirebaseServiceAccountJson() {
   );
 }
 
+function parseAllowedOrigins(value) {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
 function getEnv() {
+  const allowedOrigins = parseAllowedOrigins(
+    process.env.FRONTEND_URLS || process.env.FRONTEND_URL || ""
+  );
+
   return {
     NODE_ENV: process.env.NODE_ENV || "development",
     PORT: process.env.PORT || "4000",
     FRONTEND_URL: process.env.FRONTEND_URL,
+    FRONTEND_URLS: allowedOrigins,
     SF_LOGIN_URL: requireEnv("SF_LOGIN_URL"),
     SF_CLIENT_ID: requireEnv("SF_CLIENT_ID"),
     SF_CLIENT_SECRET: requireEnv("SF_CLIENT_SECRET"),
